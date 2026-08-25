@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Extant {
 
     public static void printLine()
@@ -17,6 +19,25 @@ public class Extant {
         printLine();
         System.out.println("Good day. State your intent.");
         printLine();
-        System.out.println("Exiting");
+
+        Scanner scanner = new Scanner(System.in);
+        String input;
+
+        while (true) {
+            input = scanner.nextLine();
+
+            if (input.equals("bye")) {
+                printLine();
+                System.out.println("Farewell. Until our paths cross again.");
+                printLine();
+                break;
+            }
+
+            printLine();
+            System.out.println(input);
+            printLine();
+        }
+
+        scanner.close();
     }
 }
