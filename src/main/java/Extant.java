@@ -1,13 +1,25 @@
 import java.util.Scanner;
 
+/**
+ * Entry point for the Extant chatbot application.
+ * Handles user commands for adding, listing, and marking tasks.
+ */
 public class Extant {
 
-    public static void printLine()
-    {
+    /**
+     * Prints a horizontal divider line to the console.
+     */
+    public static void printLine() {
         System.out.println("____________________________________________________________");
     }
+
+    /**
+     * Runs the main command loop for the Extant chatbot.
+     *
+     * @param args Command line arguments (not used).
+     */
     public static void main(String[] args) {
-        String banner = 
+        String banner =
         """
 ███████╗██╗  ██╗████████╗ █████╗ ███╗   ██╗████████╗
 ██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗████╗  ██║╚══██╔══╝
@@ -21,12 +33,11 @@ public class Extant {
         printLine();
 
         Scanner scanner = new Scanner(System.in);
-        String input;
-        String[] tasks = new String[100];
+        Task[] tasks = new Task[100];
         int taskCount = 0;
 
         while (true) {
-            input = scanner.nextLine();
+            String input = scanner.nextLine();
 
             if (input.equals("bye")) {
                 printLine();
@@ -44,7 +55,27 @@ public class Extant {
                 continue;
             }
 
-            tasks[taskCount] = input;
+            if (input.startsWith("mark")) {
+                int index = Integer.parseInt(input.substring(5).trim()) - 1;
+                tasks[index].setDone(true);
+                printLine();
+                System.out.println("Nice! I've marked this task as done:");
+                System.out.println("  " + tasks[index]);
+                printLine();
+                continue;
+            }
+
+            if (input.startsWith("unmark")) {
+                int index = Integer.parseInt(input.substring(7).trim()) - 1;
+                tasks[index].setDone(false);
+                printLine();
+                System.out.println("OK, I've marked this task as not done yet:");
+                System.out.println("  " + tasks[index]);
+                printLine();
+                continue;
+            }
+
+            tasks[taskCount] = new Task(input);
             taskCount++;
 
             printLine();
