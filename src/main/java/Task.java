@@ -25,8 +25,25 @@ public class Task {
         this.isDone = isDone;
     }
 
+    /**
+     * Returns the done status of this task.
+     *
+     * @return True if the task is done, false otherwise.
+     */
+    public boolean getDone() {
+        return this.isDone;
+    }
+    /**
+     * Returns the status icon of this task.
+     *
+     * @return 'T' for todo, 'D' for deadline, 'E' for event.
+     */
+    public char getStatusIcon() {
+        return 'T';
+    }
+
     @Override
     public String toString() {
-        return (isDone ? "[X] " : "[ ] ") + body;
+        return body;
     }
 }

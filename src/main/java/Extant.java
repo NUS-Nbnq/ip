@@ -49,8 +49,9 @@ public class Extant {
             if (input.equals("list")) {
                 printLine();
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + ". " + tasks[i]);
+                    System.out.println((i + 1) + ". [" + tasks[i].getStatusIcon() + "][" + (tasks[i].getDone() ? "X" : " ") + "] " + tasks[i]);
                 }
+                System.out.println("You have " + taskCount + " tasks in total.");
                 printLine();
                 continue;
             }
@@ -75,13 +76,65 @@ public class Extant {
                 continue;
             }
 
-            tasks[taskCount] = new Task(input);
-            taskCount++;
+            if (input.startsWith("todo")) {
+                String body = input.substring(5).trim();
+                tasks[taskCount] = new Todo(body);
+                taskCount++;
 
-            printLine();
-            System.out.println("added: " + input);
-            printLine();
+                printLine();
+                System.out.println("added: " + body);
+                printLine();
+                continue;
+            }
+
+            if (input.startsWith("deadline")) {
+                String[] parts = input.substring(9).trim().split(" /by ");
+                if (parts.length != 2) {
+                    printLine();
+                    System.out.println("Format invalid, do <body> /by <dateEnd>");
+                    printLine();
+                    continue;
+                }
+                String body = parts[0];
+                String dateEnd = parts[1];
+                tasks[taskCount] = new Deadline(body, dateEnd);
+                taskCount++;
+
+                printLine();
+                System.out.println("added: " + body + " (by: " + dateEnd + ")");
+                printLine();
+                continue;
+            }
+
+            if (input.startsWith("event")) {
+                String[] parts = input.substring(6).trim().split(" /from ");
+                if (parts.length != 2) {
+                    printLine();
+                    System.out.println("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
+                    printLine();
+                    continue;
+                }
+                String body = parts[0];
+                String[] dateParts = parts[1].split(" /to ");
+                if (dateParts.length != 2) {
+                    printLine();
+                    System.out.println("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
+                    printLine();
+                    continue;
+                }
+                String dateStart = dateParts[0];
+                String dateEnd = dateParts[1];
+                tasks[taskCount] = new Event(body, dateStart, dateEnd);
+                taskCount++;
+
+                printLine();
+                System.out.println("added: " + body + " (from: " + dateStart + " to: " + dateEnd + ")");
+                printLine();
+                continue;
+            }
         }
+
+        
 
         scanner.close();
     }
