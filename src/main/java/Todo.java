@@ -7,14 +7,20 @@ public class Todo extends Task {
     public Todo(String body) {
         super(body);
     }
-    
+
     /**
-     * Returns the status icon of this task.
+     * Creates a new todo task from a string representation.
      *
-     * @return 'T' for todo, 'D' for deadline, 'E' for event.
+     * @param body String representation of the todo task.
+     * @return A new Todo object.
      */
-    @Override
+    public static Todo fromString(String body) throws IllegalEventException {
+        return new Todo(body);
+    }
+
+    @Override 
     public char getStatusIcon() {
         return 'T';
     }
+    
 }

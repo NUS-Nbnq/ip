@@ -19,13 +19,23 @@ public class Event extends Task {
     public String toString() {
         return super.toString() + " (from: " + dateStart + " to: " + dateEnd + ")";
     }
-    
-    /**
-     * Returns the status icon of this task.
-     *
-     * @return 'T' for todo, 'D' for deadline, 'E' for event.
-     */
-    @Override
+
+    public static Event fromString(String cmd) throws IllegalEventException {
+        String[] parts = cmd.split("/from");
+        if (parts.length != 2) {
+            throw new IllegalEventException("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
+        }
+        String body = parts[0].trim();
+        String[] dateParts = parts[1].split("/to");
+        if (dateParts.length != 2) {
+            throw new IllegalEventException("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
+        }
+        String dateStart = dateParts[0].trim();
+        String dateEnd = dateParts[1].trim();
+        return new Event(body, dateStart, dateEnd);
+    }
+
+    @Override 
     public char getStatusIcon() {
         return 'E';
     }

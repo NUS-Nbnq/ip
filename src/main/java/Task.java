@@ -39,7 +39,7 @@ public class Task {
      * @return 'T' for todo, 'D' for deadline, 'E' for event.
      */
     public char getStatusIcon() {
-        return 'T';
+        return ' ';
     }
 
     @Override

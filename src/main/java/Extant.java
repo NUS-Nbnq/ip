@@ -6,6 +6,24 @@ import java.util.Scanner;
  */
 public class Extant {
 
+    static Task[] tasks = new Task[100];
+    static int taskCount = 0;
+
+    static String prettify(Task task, int i)
+    {
+        return (i + 1) + ". [" + task.getStatusIcon() + "][" + (task.getDone() ? "X" : " ") + "] " + task;
+    }
+
+    static void addTask(Task task)
+    {
+        tasks[taskCount] = task;
+        taskCount++;
+
+        printLine();
+        System.out.println("added: " + tasks[taskCount - 1]);
+        printLine();
+    }
+
     /**
      * Prints a horizontal divider line to the console.
      */
@@ -33,109 +51,84 @@ public class Extant {
         printLine();
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
-        int taskCount = 0;
 
+        outerLoop:
         while (true) {
+            try
+            {
             String input = scanner.nextLine();
-
-            if (input.equals("bye")) {
-                printLine();
-                System.out.println("Farewell. Until our paths cross again.");
-                printLine();
-                break;
-            }
-
-            if (input.equals("list")) {
-                printLine();
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println((i + 1) + ". [" + tasks[i].getStatusIcon() + "][" + (tasks[i].getDone() ? "X" : " ") + "] " + tasks[i]);
-                }
-                System.out.println("You have " + taskCount + " tasks in total.");
-                printLine();
-                continue;
-            }
-
-            if (input.startsWith("mark")) {
-                int index = Integer.parseInt(input.substring(5).trim()) - 1;
-                tasks[index].setDone(true);
-                printLine();
-                System.out.println("Nice! I've marked this task as done:");
-                System.out.println("  " + tasks[index]);
-                printLine();
-                continue;
-            }
-
-            if (input.startsWith("unmark")) {
-                int index = Integer.parseInt(input.substring(7).trim()) - 1;
-                tasks[index].setDone(false);
-                printLine();
-                System.out.println("OK, I've marked this task as not done yet:");
-                System.out.println("  " + tasks[index]);
-                printLine();
-                continue;
-            }
-
-            if (input.startsWith("todo")) {
-                String body = input.substring(5).trim();
-                tasks[taskCount] = new Todo(body);
-                taskCount++;
-
-                printLine();
-                System.out.println("added: " + body);
-                printLine();
-                continue;
-            }
-
-            if (input.startsWith("deadline")) {
-                String[] parts = input.substring(9).trim().split(" /by ");
-                if (parts.length != 2) {
+            String keyword = input.split(" ")[0];
+            switch (keyword)
+                {   
+                case "bye":
                     printLine();
-                    System.out.println("Format invalid, do <body> /by <dateEnd>");
+                    System.out.println("Farewell. Until our paths cross again.");
                     printLine();
-                    continue;
-                }
-                String body = parts[0];
-                String dateEnd = parts[1];
-                tasks[taskCount] = new Deadline(body, dateEnd);
-                taskCount++;
-
+                    break outerLoop; // idk what this does but it works?
+                case "list":
+                    doList();
+                    break;
+                case "mark":
+                    int indexMark = Integer.parseInt(input.substring("mark".length()).trim()) - 1;
+                    doMark(indexMark);
+                    break;
+                case "unmark":
+                    int indexUnmark = Integer.parseInt(input.substring("unmark".length()).trim()) - 1;
+                    doUnMark(indexUnmark);
+                    break;
+                case "todo":
+                    String cmdTodo = input.substring("todo".length()).trim();
+                    Task taskTempTodo = Todo.fromString(cmdTodo);
+                    addTask(taskTempTodo);
+                    break;
+                case "deadline":
+                    String cmdDeadline = input.substring("deadline".length()).trim();
+                    Task taskTempDeadline = Deadline.fromString(cmdDeadline);
+                    addTask(taskTempDeadline);
+                    break;
+                case "event":
+                    String cmdEvent = input.substring("event".length()).trim();
+                    Task taskTempEvent = Event.fromString(cmdEvent);
+                    addTask(taskTempEvent);
+                    break;
+                default:
+                    throw new IllegalKeywordException();
+                }                
+            } catch (IllegalEventException e) {
                 printLine();
-                System.out.println("added: " + body + " (by: " + dateEnd + ")");
+                System.out.println(e.getMessage());
                 printLine();
-                continue;
-            }
-
-            if (input.startsWith("event")) {
-                String[] parts = input.substring(6).trim().split(" /from ");
-                if (parts.length != 2) {
-                    printLine();
-                    System.out.println("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
-                    printLine();
-                    continue;
-                }
-                String body = parts[0];
-                String[] dateParts = parts[1].split(" /to ");
-                if (dateParts.length != 2) {
-                    printLine();
-                    System.out.println("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
-                    printLine();
-                    continue;
-                }
-                String dateStart = dateParts[0];
-                String dateEnd = dateParts[1];
-                tasks[taskCount] = new Event(body, dateStart, dateEnd);
-                taskCount++;
-
+            } catch (IllegalKeywordException e) {
                 printLine();
-                System.out.println("added: " + body + " (from: " + dateStart + " to: " + dateEnd + ")");
+                System.out.println("Command Unrecognized. Please use 'todo', 'deadline', or 'event' to add tasks.");
                 printLine();
-                continue;
             }
         }
-
-        
-
         scanner.close();
+    }
+
+    private static void doUnMark(int index) {                
+        tasks[index].setDone(false);
+        printLine();
+        System.out.println("OK, I've marked this task as not done yet:");
+        System.out.println("  " + tasks[index]);
+        printLine();
+    }
+
+    private static void doMark(int index) {
+        tasks[index].setDone(true);
+        printLine();
+        System.out.println("Nice! I've marked this task as done:");
+        System.out.println("  " + tasks[index]);
+        printLine();
+    }
+
+    private static void doList() {
+        printLine();
+        for (int i = 0; i < taskCount; i++) {
+            System.out.println(prettify(tasks[i], i));
+        }
+        System.out.println("You have " + taskCount + " tasks in total.");
+        printLine();
     }
 }
