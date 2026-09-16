@@ -1,12 +1,11 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-
 /**
  * Entry point for the Extant chatbot application.
  * Handles user commands for adding, listing, and marking tasks.
  */
 public class Extant {
-
+    private static final int MAX_TASKS = 100;
     static ArrayList<Task> tasks = new ArrayList<>();
     static int taskCount = 0;
 
@@ -19,6 +18,7 @@ public class Extant {
     {
         tasks.add(task);
         taskCount++;
+        Storage.save(tasks, taskCount);
 
         printLine();
         System.out.println("added: " + tasks.get(taskCount - 1));
@@ -38,6 +38,7 @@ public class Extant {
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
+        taskCount = Storage.load(tasks, MAX_TASKS);
         String banner =
         """
 ███████╗██╗  ██╗████████╗ █████╗ ███╗   ██╗████████╗
@@ -114,6 +115,7 @@ public class Extant {
 
     private static void doUnMark(int index) {                
         tasks.get(index).setDone(false);
+        Storage.save(tasks, taskCount);
         printLine();
         System.out.println("OK, I've marked this task as not done yet:");
         System.out.println("  " + tasks.get(index));
@@ -122,6 +124,7 @@ public class Extant {
 
     private static void doMark(int index) {
         tasks.get(index).setDone(true);
+        Storage.save(tasks, taskCount);
         printLine();
         System.out.println("Nice! I've marked this task as done:");
         System.out.println("  " + tasks.get(index)  );
@@ -143,6 +146,12 @@ public class Extant {
         System.out.println("Deleting " + ( index + 1 ) + ": ");
         System.out.println("  " + tasks.get(index));
         tasks.remove(index);
+        taskCount--;
+        Storage.save(tasks, taskCount);
         printLine();
     }
+
+    private static void doDelete()
+    {}
+
 }
