@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -6,7 +7,7 @@ import java.util.Scanner;
  */
 public class Extant {
 
-    static Task[] tasks = new Task[100];
+    static ArrayList<Task> tasks = new ArrayList<>();
     static int taskCount = 0;
 
     static String prettify(Task task, int i)
@@ -16,11 +17,11 @@ public class Extant {
 
     static void addTask(Task task)
     {
-        tasks[taskCount] = task;
+        tasks.add(task);
         taskCount++;
 
         printLine();
-        System.out.println("added: " + tasks[taskCount - 1]);
+        System.out.println("added: " + tasks.get(taskCount - 1));
         printLine();
     }
 
@@ -65,6 +66,10 @@ public class Extant {
                     System.out.println("Farewell. Until our paths cross again.");
                     printLine();
                     break outerLoop; // idk what this does but it works?
+                case "delete":
+                    int indexDelete = Integer.parseInt(input.substring("delete".length()).trim()) - 1;
+                    doDelete(indexDelete);
+                    break;
                 case "list":
                     doList();
                     break;
@@ -108,27 +113,36 @@ public class Extant {
     }
 
     private static void doUnMark(int index) {                
-        tasks[index].setDone(false);
+        tasks.get(index).setDone(false);
         printLine();
         System.out.println("OK, I've marked this task as not done yet:");
-        System.out.println("  " + tasks[index]);
+        System.out.println("  " + tasks.get(index));
         printLine();
     }
 
     private static void doMark(int index) {
-        tasks[index].setDone(true);
+        tasks.get(index).setDone(true);
         printLine();
         System.out.println("Nice! I've marked this task as done:");
-        System.out.println("  " + tasks[index]);
+        System.out.println("  " + tasks.get(index)  );
         printLine();
     }
 
     private static void doList() {
         printLine();
-        for (int i = 0; i < taskCount; i++) {
-            System.out.println(prettify(tasks[i], i));
+        for (int i = 0; i < tasks.size(); i++) {
+            System.out.println(prettify(tasks.get(i), i));
         }
-        System.out.println("You have " + taskCount + " tasks in total.");
+        System.out.println("You have " + tasks.size() + " tasks in total.");
+        printLine();
+    }
+
+    private static void doDelete(int index)
+    {
+        printLine();
+        System.out.println("Deleting " + ( index + 1 ) + ": ");
+        System.out.println("  " + tasks.get(index));
+        tasks.remove(index);
         printLine();
     }
 }
