@@ -150,8 +150,4 @@ public class Extant {
         Storage.save(tasks, taskCount);
         printLine();
     }
-
-    private static void doDelete()
-    {}
-
 }
