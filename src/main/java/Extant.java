@@ -1,11 +1,9 @@
 import java.util.Scanner;
-
 /**
  * Entry point for the Extant chatbot application.
  * Handles user commands for adding, listing, and marking tasks.
  */
 public class Extant {
-
     static Task[] tasks = new Task[100];
     static int taskCount = 0;
 
@@ -18,6 +16,7 @@ public class Extant {
     {
         tasks[taskCount] = task;
         taskCount++;
+        Storage.save(tasks, taskCount);
 
         printLine();
         System.out.println("added: " + tasks[taskCount - 1]);
@@ -37,6 +36,7 @@ public class Extant {
      * @param args Command line arguments (not used).
      */
     public static void main(String[] args) {
+        taskCount = Storage.load(tasks, tasks.length);
         String banner =
         """
 ███████╗██╗  ██╗████████╗ █████╗ ███╗   ██╗████████╗
@@ -109,6 +109,7 @@ public class Extant {
 
     private static void doUnMark(int index) {                
         tasks[index].setDone(false);
+        Storage.save(tasks, taskCount);
         printLine();
         System.out.println("OK, I've marked this task as not done yet:");
         System.out.println("  " + tasks[index]);
@@ -117,6 +118,7 @@ public class Extant {
 
     private static void doMark(int index) {
         tasks[index].setDone(true);
+        Storage.save(tasks, taskCount);
         printLine();
         System.out.println("Nice! I've marked this task as done:");
         System.out.println("  " + tasks[index]);
@@ -131,4 +133,8 @@ public class Extant {
         System.out.println("You have " + taskCount + " tasks in total.");
         printLine();
     }
+
+    private static void doDelete()
+    {}
+
 }
