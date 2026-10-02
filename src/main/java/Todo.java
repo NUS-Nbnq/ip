@@ -1,3 +1,4 @@
+/** Represents a simple task without a date or time constraint. */
 public class Todo extends Task {
     /**
      * Creates a new todo task with the given description.
@@ -14,6 +15,7 @@ public class Todo extends Task {
      * @param body String representation of the todo task.
      * @return A new Todo object.
      */
+    /** Creates a todo task from a non-empty description. */
     public static Todo fromString(String body) throws IllegalEventException {
         if (body == null || body.isBlank()) {
             throw new IllegalEventException("Todo description cannot be empty.");

@@ -1,3 +1,4 @@
+/** Represents a task that must be completed by a specified date. */
 public class Deadline extends Task {
     private String dateEnd;
 
@@ -18,6 +19,7 @@ public class Deadline extends Task {
     }
     
 
+    /** Parses a deadline in the form {@code <body> /by <date>}. */
     public static Deadline fromString(String args) throws IllegalEventException {
         if (args == null || !args.contains("/by")) {
             throw new IllegalEventException("Format invalid, do <body> /by <dateEnd>");
