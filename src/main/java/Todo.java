@@ -15,7 +15,10 @@ public class Todo extends Task {
      * @return A new Todo object.
      */
     public static Todo fromString(String body) throws IllegalEventException {
-        return new Todo(body);
+        if (body == null || body.isBlank()) {
+            throw new IllegalEventException("Todo description cannot be empty.");
+        }
+        return new Todo(body.trim());
     }
 
     @Override 

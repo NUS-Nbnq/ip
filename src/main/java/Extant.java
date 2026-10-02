@@ -4,27 +4,13 @@
  */
 public class Extant {
     private static final int MAX_TASKS = 100;
-    static TaskList tasks = new TaskList();
+
+
     private static final Ui ui = new Ui();
     private static final Parser parser = new Parser();
     private static final Storage storage = new Storage("data/Extant.txt");
-
-    static void addTask(Task task)
-    {
-        tasks.add(task);
-        storage.save(tasks.asList(), tasks.size());
-
-        ui.showMessage("added: " + tasks.get(tasks.size() - 1));
-    }
-
-    /**
-     * Runs the main command loop for the Extant chatbot.
-     *
-     * @param args Command line arguments (not used).
-     */
-    public static void main(String[] args) {
-        storage.load(tasks.asList(), MAX_TASKS);
-        String banner =
+    private static TaskList tasks = new TaskList(storage);
+    private static final String banner =
         """
 ███████╗██╗  ██╗████████╗ █████╗ ███╗   ██╗████████╗
 ██╔════╝╚██╗██╔╝╚══██╔══╝██╔══██╗████╗  ██║╚══██╔══╝
@@ -32,40 +18,65 @@ public class Extant {
 ██╔══╝   ██╔██╗    ██║   ██╔══██║██║╚██╗██║   ██║   
 ███████╗██╔╝ ██╗   ██║   ██║  ██║██║ ╚████║   ██║   
 ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   """;
+
+
+
+    /**
+     * Runs the main command loop for the Extant chatbot.
+     *
+     * @param args Command line arguments (not used).
+     */
+    public static void main(String[] args) {
+        storage.load(tasks, MAX_TASKS);
+
         System.out.println(banner);
         ui.showWelcome();
+        run();
+    }
 
+
+    private static void run() {
         outerLoop:
         while (true) {
             try
             {
-            String input = ui.readCommand();
-            String keyword = parser.getKeyword(input);
+            String[] input = parser.split(ui.readCommand());
+            CommandType keyword = parser.getKeyword(input);
             switch (keyword)
                 {   
-                case "bye":
+                case CommandType.BYE:
                     ui.showMessage("Farewell. Until our paths cross again.");
                     break outerLoop; // idk what this does but it works?
-                case "delete":
-                    int indexDelete = parser.parseIndex(input, keyword);
-                    doDelete(indexDelete);
+
+                case CommandType.DELETE:
+                    int indexDelete = parser.parseAsIndex(keyword, input);
+                    Task deletedTask = tasks.remove(indexDelete);
+                    ui.showMessage("Deleting " + (indexDelete + 1) + ": \n  " + deletedTask);
                     break;
-                case "list":
-                    doList();
+
+                case CommandType.LIST:
+                    ui.showTaskList(tasks);
                     break;
-                case "mark":
-                    int indexMark = parser.parseIndex(input, keyword);
-                    doMark(indexMark);
+
+                case CommandType.MARK:
+                    int indexMark = parser.parseAsIndex(keyword, input);
+                    tasks.mark(indexMark);
+                    ui.showMessage("Nice! I've marked this task as done:\n  " + tasks.get(indexMark));
                     break;
-                case "unmark":
-                    int indexUnmark = parser.parseIndex(input, keyword);
-                    doUnMark(indexUnmark);
+
+                case CommandType.UNMARK:
+                    int indexUnmark = parser.parseAsIndex(keyword, input);
+                    tasks.unmark(indexUnmark);
+                    ui.showMessage("OK, I've marked this task as not done yet:\n  " + tasks.get(indexUnmark));
                     break;
-                case "todo":
-                case "deadline":
-                case "event":
-                    addTask(parser.parseTask(keyword, parser.getArgument(input, keyword)));
+
+                case CommandType.TODO:
+                case CommandType.DEADLINE:
+                case CommandType.EVENT:
+                    tasks.add(parser.parseAsTask(keyword, input));
+                    ui.showMessage("added: " + tasks.get(tasks.size() - 1));
                     break;
+
                 default:
                     throw new IllegalKeywordException();
                 }                
@@ -75,31 +86,13 @@ public class Extant {
                 ui.showMessage("Command Unrecognized. Please use 'todo', 'deadline', or 'event' to add tasks.");
             } catch (NumberFormatException e) {
                 ui.showMessage("Invalid index format. Please provide a valid number.");
+            } catch (IndexOutOfBoundsException e) {
+                ui.showMessage("Invalid index. Please provide a valid task number.");
+            } catch (Exception e) {
+                ui.showMessage("An unexpected error occurred: " + e.getMessage());
             }
         }
         ui.close();
     }
 
-    private static void doUnMark(int index) {                
-        tasks.unmark(index);
-        storage.save(tasks.asList(), tasks.size());
-        ui.showMessage("OK, I've marked this task as not done yet:\n  " + tasks.get(index));
-    }
-
-    private static void doMark(int index) {
-        tasks.mark(index);
-        storage.save(tasks.asList(), tasks.size());
-        ui.showMessage("Nice! I've marked this task as done:\n  " + tasks.get(index));
-    }
-
-    private static void doList() {
-        ui.showTaskList(tasks);
-    }
-
-    private static void doDelete(int index)
-    {
-        ui.showMessage("Deleting " + ( index + 1 ) + ": \n  " + tasks.get(index));
-        tasks.remove(index);
-        storage.save(tasks.asList(), tasks.size());
-    }
 }

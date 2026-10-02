@@ -23,10 +23,10 @@ public class Storage {
      * Writes all current tasks to the data file, creating its parent directory
      * if necessary.
      *
-     * @param tasks the task array
-     * @param taskCount number of valid tasks in the array
+     * @param tasks the task list
+     * @param taskCount number of valid tasks in the list
      */
-    public void save(ArrayList<Task> tasks, int taskCount) {
+    public void save(TaskList tasks, int taskCount) {
         StringBuilder contents = new StringBuilder();
         for (int i = 0; i < taskCount; i++) {
             Task task = tasks.get(i);
@@ -53,11 +53,11 @@ public class Storage {
      * Loads tasks from disk. Invalid lines are ignored so one bad record does
      * not prevent the chatbot from starting.
      *
-     * @param tasks array to populate
+     * @param tasks list to populate
      * @param maximumTasks maximum number of tasks to load
      * @return number of tasks loaded
      */
-    public int load(ArrayList<Task> tasks, int maximumTasks) {
+    public int load(TaskList tasks, int maximumTasks) {
         if (!Files.exists(filePath)) {
             return 0;
         }
@@ -71,7 +71,7 @@ public class Storage {
                 }
                 Task task = parseLine(line);
                 if (task != null) {
-                    tasks.add(task);
+                    tasks.addLoaded(task);
                     loaded++;
                 } else if (!line.trim().isEmpty()) {
                     System.out.println("Warning: skipped malformed task: " + line);

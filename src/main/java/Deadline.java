@@ -18,13 +18,16 @@ public class Deadline extends Task {
     }
     
 
-    public static Deadline fromString(String cmd) throws IllegalEventException {
-        String[] parts = cmd.split("/by");
-        if (parts.length != 2) {
+    public static Deadline fromString(String args) throws IllegalEventException {
+        if (args == null || !args.contains("/by")) {
             throw new IllegalEventException("Format invalid, do <body> /by <dateEnd>");
         }
+        String[] parts = args.split("/by", 2);
         String body = parts[0].trim();
         String dateEnd = parts[1].trim();
+        if (body.isEmpty() || dateEnd.isEmpty()) {
+            throw new IllegalEventException("Format invalid, do <body> /by <dateEnd>");
+        }
         return new Deadline(body, dateEnd);
     }
 

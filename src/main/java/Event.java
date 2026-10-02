@@ -20,18 +20,17 @@ public class Event extends Task {
         return super.toString() + " (from: " + dateStart + " to: " + dateEnd + ")";
     }
 
-    public static Event fromString(String cmd) throws IllegalEventException {
-        String[] parts = cmd.split("/from");
-        if (parts.length != 2) {
+    public static Event fromString(String args) throws IllegalEventException {
+        if (args == null || !args.contains("/from") || !args.contains("/to")) {
             throw new IllegalEventException("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
         }
+        String[] parts = args.split("/from|/to");
         String body = parts[0].trim();
-        String[] dateParts = parts[1].split("/to");
-        if (dateParts.length != 2) {
+        String dateStart = parts[1].trim();
+        String dateEnd = parts[2].trim();
+        if (body.isEmpty() || dateStart.isEmpty() || dateEnd.isEmpty()) {
             throw new IllegalEventException("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
         }
-        String dateStart = dateParts[0].trim();
-        String dateEnd = dateParts[1].trim();
         return new Event(body, dateStart, dateEnd);
     }
 
