@@ -37,6 +37,11 @@ public class Task {
     public boolean getDone() {
         return this.isDone;
     }
+
+    /** Returns whether this task body contains the given text, ignoring case. */
+    public boolean contains(String searchTerm) {
+        return body.toLowerCase().contains(searchTerm.toLowerCase());
+    }
     /**
      * Returns the status icon of this task.
      *

@@ -58,6 +58,13 @@ public class Extant {
                     ui.showTaskList(tasks);
                     break;
 
+                case CommandType.FIND:
+                    if (input.length < 2 || input[1].isBlank()) {
+                        throw new IllegalEventException("Usage: find <string>");
+                    }
+                    ui.showMatchingTasks(tasks.find(input[1]));
+                    break;
+
                 case CommandType.MARK:
                     int indexMark = parser.parseAsIndex(keyword, input);
                     tasks.mark(indexMark);
