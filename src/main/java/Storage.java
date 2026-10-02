@@ -11,20 +11,22 @@ import java.util.ArrayList;
  * and display text.</p>
  */
 public class Storage {
-    private static final Path FILE_PATH = Paths.get("data", "Extant.txt");
+    private final Path filePath;
 
-    private Storage() {
-        // Utility class; do not instantiate.
+    /** Creates storage backed by the supplied file path. */
+    public Storage(String filePath) {
+        this.filePath = Paths.get(filePath);
     }
 
     /**
+     *
      * Writes all current tasks to the data file, creating its parent directory
      * if necessary.
      *
      * @param tasks the task array
      * @param taskCount number of valid tasks in the array
      */
-    public static void save(ArrayList<Task> tasks, int taskCount) {
+    public void save(ArrayList<Task> tasks, int taskCount) {
         StringBuilder contents = new StringBuilder();
         for (int i = 0; i < taskCount; i++) {
             Task task = tasks.get(i);
@@ -37,8 +39,11 @@ public class Storage {
         }
 
         try {
-            Files.createDirectories(FILE_PATH.getParent());
-            Files.writeString(FILE_PATH, contents.toString());
+            Path parent = filePath.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            Files.writeString(filePath, contents.toString());
         } catch (IOException e) {
             System.out.println("Unable to save tasks: " + e.getMessage());
         }
@@ -52,14 +57,14 @@ public class Storage {
      * @param maximumTasks maximum number of tasks to load
      * @return number of tasks loaded
      */
-    public static int load(ArrayList<Task> tasks, int maximumTasks) {
-        if (!Files.exists(FILE_PATH)) {
+    public int load(ArrayList<Task> tasks, int maximumTasks) {
+        if (!Files.exists(filePath)) {
             return 0;
         }
 
         int loaded = 0;
         try {
-            for (String line : Files.readAllLines(FILE_PATH)) {
+            for (String line : Files.readAllLines(filePath)) {
                 if (loaded == maximumTasks) {
                     System.out.println("Warning: task limit reached; remaining tasks were skipped.");
                     break;
