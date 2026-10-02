@@ -35,6 +35,7 @@ public class Extant {
     }
 
 
+    /** Reads and executes commands until the user enters {@code bye}. */
     private static void run() {
         outerLoop:
         while (true) {

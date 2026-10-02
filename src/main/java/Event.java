@@ -1,3 +1,4 @@
+/** Represents a task occurring between a start and end time. */
 public class Event extends Task {
     private String dateStart;
     private String dateEnd;
@@ -20,6 +21,7 @@ public class Event extends Task {
         return super.toString() + " (from: " + dateStart + " to: " + dateEnd + ")";
     }
 
+    /** Parses an event in the form {@code <body> /from <start> /to <end>}. */
     public static Event fromString(String args) throws IllegalEventException {
         if (args == null || !args.contains("/from") || !args.contains("/to")) {
             throw new IllegalEventException("Format invalid, do <body> /from <dateStart> /to <dateEnd>");
