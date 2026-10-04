@@ -1,15 +1,15 @@
 # Extant User Guide
 
-Extant is a command-line task manager. It supports todo, deadline, and event
-tasks, and saves changes in `data/Extant.txt`.
+Extant is a command-line task manager. It supports todo, deadline, and event tasks, and saves changes in `data/Extant.txt`.
 
 ## Starting Extant
 
-Run the `Extant` class from your IDE, or compile with Java 25:
+Starting from release version 0.2, precompiled releases can be downloaded from the release page [https://github.com/NUS-Nbnq/ip/releases/tag/Release]
+
+If compiling from scratch, cd into the root folder and run:
 
 ```bash
-javac --release 25 -d build/classes src/main/java/*.java
-java -cp build/classes Extant
+gradle shadowjar
 ```
 
 ## Commands
